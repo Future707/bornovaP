@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Grid, findPathAStar } from '../utils/pathfinding';
 import './GridVisualizer.css';
 
@@ -15,15 +15,16 @@ function GridVisualizer() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchComplete, setSearchComplete] = useState(false);
   const [pathLength, setPathLength] = useState(0);
-  const [mode, setMode] = useState('wall'); // 'start', 'end', 'wall'
+  const [mode, setMode] = useState('wall');
+  const [mazeType, setMazeType] = useState('easy');
+  const [isDrawing, setIsDrawing] = useState(false);
 
   useEffect(() => {
-    generateGrid();
+    generateGrid('easy');
   }, []);
 
-  const generateGrid = () => {
-    // Use maze generation
-    const newGrid = new Grid(DEFAULT_WIDTH, DEFAULT_HEIGHT, true);
+  const generateGrid = (type) => {
+    const newGrid = new Grid(DEFAULT_WIDTH, DEFAULT_HEIGHT, type);
 
     // Ensure start and end are walkable
     newGrid.getNode(start.x, start.y).isWalkable = true;
@@ -34,6 +35,7 @@ function GridVisualizer() {
     setVisitedNodes([]);
     setSearchComplete(false);
     setPathLength(0);
+    setMazeType(type);
   };
 
   const runPathfinding = async () => {
@@ -45,7 +47,6 @@ function GridVisualizer() {
     setSearchComplete(false);
     setPathLength(0);
 
-    // Visualization callback
     const onVisit = async (visited, currentPath, isComplete) => {
       setVisitedNodes([...visited]);
       if (currentPath.length > 0) {
@@ -54,8 +55,7 @@ function GridVisualizer() {
       }
 
       if (!isComplete) {
-        // Delay for visualization
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise(resolve => setTimeout(resolve, 5));
       }
     };
 
@@ -70,9 +70,22 @@ function GridVisualizer() {
     setIsSearching(false);
   };
 
-  const handleCellClick = (x, y) => {
+  const handleCellMouseDown = (x, y) => {
     if (isSearching) return;
+    setIsDrawing(true);
+    handleCellInteraction(x, y);
+  };
 
+  const handleCellMouseEnter = (x, y) => {
+    if (!isDrawing || isSearching) return;
+    handleCellInteraction(x, y);
+  };
+
+  const handleCellMouseUp = () => {
+    setIsDrawing(false);
+  };
+
+  const handleCellInteraction = (x, y) => {
     if (mode === 'start') {
       setStart({ x, y });
       if (grid) {
@@ -85,7 +98,7 @@ function GridVisualizer() {
       }
     } else if (mode === 'wall') {
       if ((x === start.x && y === start.y) || (x === end.x && y === end.y)) {
-        return; // Don't allow placing walls on start/end
+        return;
       }
       const node = grid.getNode(x, y);
       node.isWalkable = !node.isWalkable;
@@ -126,33 +139,68 @@ function GridVisualizer() {
   return (
     <div className="visualizer-container">
       <div className="header">
-        <h1>A* Pathfinding Algoritması</h1>
+        <h1>A* Pathfinding Algorithm</h1>
+        <p className="subtitle">by BeyondX</p>
       </div>
 
       <div className="controls">
         <div className="control-group">
-          <label>Mod Seçin:</label>
+          <label>Labirent Seçin:</label>
+          <div className="button-group">
+            <button
+              onClick={() => generateGrid('easy')}
+              disabled={isSearching}
+              className={mazeType === 'easy' ? 'active' : ''}
+            >
+              Kolay
+            </button>
+            <button
+              onClick={() => generateGrid('medium')}
+              disabled={isSearching}
+              className={mazeType === 'medium' ? 'active' : ''}
+            >
+              Orta
+            </button>
+            <button
+              onClick={() => generateGrid('hard')}
+              disabled={isSearching}
+              className={mazeType === 'hard' ? 'active' : ''}
+            >
+              Zor
+            </button>
+            <button
+              onClick={() => generateGrid('random')}
+              disabled={isSearching}
+              className={mazeType === 'random' ? 'active' : ''}
+            >
+              Random
+            </button>
+          </div>
+        </div>
+
+        <div className="control-group">
+          <label>Mod:</label>
           <div className="button-group">
             <button
               className={mode === 'start' ? 'active' : ''}
               onClick={() => setMode('start')}
               disabled={isSearching}
             >
-              Başlangıç Seç
+              Başlangıç
             </button>
             <button
               className={mode === 'end' ? 'active' : ''}
               onClick={() => setMode('end')}
               disabled={isSearching}
             >
-              Bitiş Seç
+              Bitiş
             </button>
             <button
               className={mode === 'wall' ? 'active' : ''}
               onClick={() => setMode('wall')}
               disabled={isSearching}
             >
-              Duvar Çiz
+              Duvar
             </button>
           </div>
         </div>
@@ -164,12 +212,6 @@ function GridVisualizer() {
             disabled={isSearching}
           >
             {isSearching ? 'Aranıyor...' : 'Yolu Bul'}
-          </button>
-          <button
-            onClick={generateGrid}
-            disabled={isSearching}
-          >
-            Yeni Labirent
           </button>
         </div>
       </div>
@@ -195,13 +237,16 @@ function GridVisualizer() {
             gridTemplateColumns: `repeat(${grid.width}, ${CELL_SIZE}px)`,
             gridTemplateRows: `repeat(${grid.height}, ${CELL_SIZE}px)`,
           }}
+          onMouseLeave={handleCellMouseUp}
         >
           {grid.nodes.map((row, y) =>
             row.map((node, x) => (
               <div
                 key={`${x}-${y}`}
                 className={getCellClass(x, y)}
-                onClick={() => handleCellClick(x, y)}
+                onMouseDown={() => handleCellMouseDown(x, y)}
+                onMouseEnter={() => handleCellMouseEnter(x, y)}
+                onMouseUp={handleCellMouseUp}
                 title={`(${x}, ${y})`}
               />
             ))

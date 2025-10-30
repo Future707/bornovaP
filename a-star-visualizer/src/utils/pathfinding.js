@@ -19,10 +19,129 @@ export class Node {
 }
 
 export class Grid {
-  constructor(width, height, useMaze = true) {
+  constructor(width, height, type = 'random') {
     this.width = width;
     this.height = height;
-    this.nodes = useMaze ? this.createMaze() : this.createRandomGrid(0.65);
+
+    switch(type) {
+      case 'easy':
+        this.nodes = this.createPresetMaze('easy');
+        break;
+      case 'medium':
+        this.nodes = this.createPresetMaze('medium');
+        break;
+      case 'hard':
+        this.nodes = this.createPresetMaze('hard');
+        break;
+      case 'random':
+        this.nodes = this.createMaze();
+        break;
+      default:
+        this.nodes = this.createMaze();
+    }
+  }
+
+  /**
+   * Creates preset maze layouts with different difficulty levels
+   */
+  createPresetMaze(difficulty) {
+    // Initialize empty grid (all walkable)
+    const grid = [];
+    for (let y = 0; y < this.height; y++) {
+      const row = [];
+      for (let x = 0; x < this.width; x++) {
+        row.push(new Node(x, y, true));
+      }
+      grid.push(row);
+    }
+
+    // Add border walls
+    for (let x = 0; x < this.width; x++) {
+      grid[0][x].isWalkable = false;
+      grid[this.height - 1][x].isWalkable = false;
+    }
+    for (let y = 0; y < this.height; y++) {
+      grid[y][0].isWalkable = false;
+      grid[y][this.width - 1].isWalkable = false;
+    }
+
+    if (difficulty === 'easy') {
+      // Easy: Wide corridors, few dead ends
+      for (let y = 5; y < this.height - 5; y += 8) {
+        for (let x = 5; x < this.width - 10; x++) {
+          if (x % 10 !== 0) {
+            grid[y][x].isWalkable = false;
+          }
+        }
+      }
+      // Vertical walls with gaps
+      for (let x = 10; x < this.width - 10; x += 10) {
+        for (let y = 1; y < this.height - 1; y++) {
+          if (y % 8 !== 0 && y % 8 !== 1) {
+            grid[y][x].isWalkable = false;
+          }
+        }
+      }
+    } else if (difficulty === 'medium') {
+      // Medium: Moderate corridors, some dead ends
+      // Create grid pattern
+      for (let y = 4; y < this.height - 4; y += 6) {
+        for (let x = 4; x < this.width - 4; x++) {
+          if (x % 8 !== 0 && x % 8 !== 1) {
+            grid[y][x].isWalkable = false;
+          }
+        }
+      }
+      for (let x = 8; x < this.width - 8; x += 8) {
+        for (let y = 1; y < this.height - 1; y++) {
+          if (y % 6 !== 0 && y % 6 !== 1 && y % 6 !== 2) {
+            grid[y][x].isWalkable = false;
+          }
+        }
+      }
+      // Add some obstacles
+      for (let i = 0; i < 15; i++) {
+        const x = Math.floor(Math.random() * (this.width - 4)) + 2;
+        const y = Math.floor(Math.random() * (this.height - 4)) + 2;
+        if (grid[y][x].isWalkable) {
+          grid[y][x].isWalkable = false;
+          grid[y][x + 1].isWalkable = false;
+        }
+      }
+    } else if (difficulty === 'hard') {
+      // Hard: Narrow paths, many dead ends, complex structure
+      // Dense grid pattern
+      for (let y = 3; y < this.height - 3; y += 4) {
+        for (let x = 3; x < this.width - 3; x++) {
+          if (x % 6 !== 0) {
+            grid[y][x].isWalkable = false;
+          }
+        }
+      }
+      for (let x = 6; x < this.width - 6; x += 6) {
+        for (let y = 1; y < this.height - 1; y++) {
+          if (y % 4 !== 0 && y % 4 !== 1) {
+            grid[y][x].isWalkable = false;
+          }
+        }
+      }
+      // Add many random obstacles
+      for (let i = 0; i < 30; i++) {
+        const x = Math.floor(Math.random() * (this.width - 4)) + 2;
+        const y = Math.floor(Math.random() * (this.height - 4)) + 2;
+        if (grid[y][x].isWalkable) {
+          grid[y][x].isWalkable = false;
+          if (Math.random() > 0.5 && x + 1 < this.width - 1) {
+            grid[y][x + 1].isWalkable = false;
+          }
+          if (Math.random() > 0.5 && y + 1 < this.height - 1) {
+            grid[y + 1][x].isWalkable = false;
+          }
+        }
+      }
+    }
+
+    return grid;
   }
 
   createRandomGrid(density) {
