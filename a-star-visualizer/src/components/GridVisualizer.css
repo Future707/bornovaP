@@ -4,7 +4,7 @@
   align-items: center;
   padding: 20px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f7fa;
 }
 
 .header {
@@ -12,17 +12,18 @@
 }
 
 .header h1 {
-  color: white;
-  font-size: 2.5rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  color: #2d3748;
+  font-size: 2rem;
+  font-weight: 600;
   margin: 0;
 }
 
 .controls {
   background: white;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -37,8 +38,8 @@
 }
 
 .control-group label {
-  font-weight: 600;
-  color: #333;
+  font-weight: 500;
+  color: #4a5568;
   font-size: 0.9rem;
 }
 
@@ -49,20 +50,20 @@
 }
 
 button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
+  padding: 8px 16px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: #f0f0f0;
-  color: #333;
+  transition: all 0.2s ease;
+  background: white;
+  color: #4a5568;
 }
 
 button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: #f7fafc;
+  border-color: #a0aec0;
 }
 
 button:disabled {
@@ -71,24 +72,27 @@ button:disabled {
 }
 
 button.active {
-  background: #667eea;
+  background: #3182ce;
   color: white;
+  border-color: #3182ce;
 }
 
 button.primary {
-  background: #10b981;
+  background: #3182ce;
   color: white;
+  border-color: #3182ce;
 }
 
 button.primary:hover:not(:disabled) {
-  background: #059669;
+  background: #2c5aa0;
+  border-color: #2c5aa0;
 }
 
 input[type="range"] {
   width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: #d3d3d3;
+  height: 4px;
+  border-radius: 2px;
+  background: #e2e8f0;
   outline: none;
   -webkit-appearance: none;
 }
@@ -96,49 +100,50 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: #667eea;
+  background: #3182ce;
   cursor: pointer;
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: #667eea;
+  background: #3182ce;
   cursor: pointer;
   border: none;
 }
 
 .status {
   margin-bottom: 20px;
-  padding: 15px 30px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1.1rem;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 1rem;
 }
 
 .status.success,
 .success {
-  background: #d1fae5;
-  color: #065f46;
-  border: 2px solid #10b981;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #86efac;
 }
 
 .status.error,
 .error {
-  background: #fee2e2;
+  background: #fef2f2;
   color: #991b1b;
-  border: 2px solid #ef4444;
+  border: 1px solid #fca5a5;
 }
 
 .grid-container {
   background: white;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
   margin-bottom: 20px;
   overflow: auto;
   max-width: 90vw;
@@ -146,9 +151,9 @@ input[type="range"]::-moz-range-thumb {
 
 .grid {
   display: grid;
-  gap: 1px;
-  background: #ccc;
-  border: 2px solid #333;
+  gap: 0;
+  background: #cbd5e0;
+  border: 2px solid #a0aec0;
   margin: 0 auto;
 }
 
@@ -156,58 +161,43 @@ input[type="range"]::-moz-range-thumb {
   width: 100%;
   height: 100%;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid #e0e0e0;
+  transition: all 0.15s ease;
+  border: 0.5px solid #e2e8f0;
 }
 
 .cell:hover {
-  opacity: 0.8;
-  transform: scale(0.95);
+  opacity: 0.85;
 }
 
 .cell.walkable {
-  background: white;
+  background: #ffffff;
 }
 
 .cell.wall {
-  background: #1f2937;
-  animation: wallPop 0.3s ease;
+  background: #2d3748;
 }
 
 .cell.start {
-  background: #10b981;
-  animation: pulse 1.5s ease-in-out infinite;
+  background: #48bb78;
 }
 
 .cell.end {
-  background: #ef4444;
-  animation: pulse 1.5s ease-in-out infinite;
+  background: #f56565;
 }
 
 .cell.visited {
-  background: #93c5fd;
-  animation: fadeIn 0.3s ease;
+  background: #bee3f8;
+  animation: fadeIn 0.2s ease;
 }
 
 .cell.path {
-  background: #fbbf24;
-  animation: pathReveal 0.5s ease;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(0.9);
-    opacity: 0.7;
-  }
+  background: #3182ce;
+  animation: pathReveal 0.3s ease;
 }
 
 @keyframes fadeIn {
   from {
-    opacity: 0;
+    opacity: 0.3;
   }
   to {
     opacity: 1;
@@ -216,32 +206,19 @@ input[type="range"]::-moz-range-thumb {
 
 @keyframes pathReveal {
   from {
-    transform: scale(0.5);
-    opacity: 0;
+    opacity: 0.5;
   }
   to {
-    transform: scale(1);
     opacity: 1;
-  }
-}
-
-@keyframes wallPop {
-  0% {
-    transform: scale(0.8);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
   }
 }
 
 .legend {
   background: white;
   padding: 15px 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
@@ -257,43 +234,43 @@ input[type="range"]::-moz-range-thumb {
 .legend-box {
   width: 20px;
   height: 20px;
-  border: 1px solid #333;
-  border-radius: 3px;
+  border: 1px solid #a0aec0;
+  border-radius: 2px;
 }
 
 .legend-box.start {
-  background: #10b981;
+  background: #48bb78;
 }
 
 .legend-box.end {
-  background: #ef4444;
+  background: #f56565;
 }
 
 .legend-box.path {
-  background: #fbbf24;
+  background: #3182ce;
 }
 
 .legend-box.visited {
-  background: #93c5fd;
+  background: #bee3f8;
 }
 
 .legend-box.walkable {
-  background: white;
+  background: #ffffff;
 }
 
 .legend-box.wall {
-  background: #1f2937;
+  background: #2d3748;
 }
 
 .legend-item span {
-  font-size: 0.9rem;
-  color: #333;
+  font-size: 0.85rem;
+  color: #4a5568;
   font-weight: 500;
 }
 
 @media (max-width: 768px) {
   .header h1 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
 
   .controls {

@@ -1,29 +1,29 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Grid, findPathAStar } from '../utils/pathfinding';
 import './GridVisualizer.css';
 
-const CELL_SIZE = 25;
-const DEFAULT_WIDTH = 30;
-const DEFAULT_HEIGHT = 20;
+const CELL_SIZE = 20;
+const DEFAULT_WIDTH = 41;
+const DEFAULT_HEIGHT = 31;
 
 function GridVisualizer() {
   const [grid, setGrid] = useState(null);
-  const [start, setStart] = useState({ x: 0, y: 0 });
-  const [end, setEnd] = useState({ x: DEFAULT_WIDTH - 1, y: DEFAULT_HEIGHT - 1 });
+  const [start, setStart] = useState({ x: 1, y: 1 });
+  const [end, setEnd] = useState({ x: DEFAULT_WIDTH - 2, y: DEFAULT_HEIGHT - 2 });
   const [path, setPath] = useState([]);
   const [visitedNodes, setVisitedNodes] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [density, setDensity] = useState(0.7);
   const [searchComplete, setSearchComplete] = useState(false);
   const [pathLength, setPathLength] = useState(0);
-  const [mode, setMode] = useState('start'); // 'start', 'end', 'wall'
+  const [mode, setMode] = useState('wall'); // 'start', 'end', 'wall'
 
   useEffect(() => {
     generateGrid();
   }, []);
 
   const generateGrid = () => {
-    const newGrid = new Grid(DEFAULT_WIDTH, DEFAULT_HEIGHT, density);
+    // Use maze generation
+    const newGrid = new Grid(DEFAULT_WIDTH, DEFAULT_HEIGHT, true);
 
     // Ensure start and end are walkable
     newGrid.getNode(start.x, start.y).isWalkable = true;
@@ -121,57 +121,40 @@ function GridVisualizer() {
     return classes.join(' ');
   };
 
-  const handleDensityChange = (e) => {
-    setDensity(parseFloat(e.target.value));
-  };
-
   if (!grid) return <div>Loading...</div>;
 
   return (
     <div className="visualizer-container">
       <div className="header">
-        <h1>🎯 A* Pathfinding Görselleştirici</h1>
+        <h1>A* Pathfinding Algoritması</h1>
       </div>
 
       <div className="controls">
         <div className="control-group">
-          <label>Mod:</label>
+          <label>Mod Seçin:</label>
           <div className="button-group">
             <button
               className={mode === 'start' ? 'active' : ''}
               onClick={() => setMode('start')}
               disabled={isSearching}
             >
-              🟢 Başlangıç Seç
+              Başlangıç Seç
             </button>
             <button
               className={mode === 'end' ? 'active' : ''}
               onClick={() => setMode('end')}
               disabled={isSearching}
             >
-              🔴 Bitiş Seç
+              Bitiş Seç
             </button>
             <button
               className={mode === 'wall' ? 'active' : ''}
               onClick={() => setMode('wall')}
               disabled={isSearching}
             >
-              🧱 Duvar Çiz
+              Duvar Çiz
             </button>
           </div>
-        </div>
-
-        <div className="control-group">
-          <label>Koridor Yoğunluğu: {(density * 100).toFixed(0)}%</label>
-          <input
-            type="range"
-            min="0.3"
-            max="0.9"
-            step="0.05"
-            value={density}
-            onChange={handleDensityChange}
-            disabled={isSearching}
-          />
         </div>
 
         <div className="button-group">
@@ -180,13 +163,13 @@ function GridVisualizer() {
             onClick={runPathfinding}
             disabled={isSearching}
           >
-            {isSearching ? '🔍 Aranıyor...' : '▶️ Yolu Bul'}
+            {isSearching ? 'Aranıyor...' : 'Yolu Bul'}
           </button>
           <button
             onClick={generateGrid}
             disabled={isSearching}
           >
-            🔄 Yeni Grid
+            Yeni Labirent
           </button>
         </div>
       </div>
@@ -195,11 +178,11 @@ function GridVisualizer() {
         <div className="status">
           {path.length > 0 ? (
             <div className="success">
-              ✅ Yol bulundu! Uzunluk: <strong>{pathLength}</strong> adım
+              Yol bulundu! Uzunluk: <strong>{pathLength}</strong> adım
             </div>
           ) : (
             <div className="error">
-              ❌ Yol bulunamadı!
+              Yol bulunamadı!
             </div>
           )}
         </div>

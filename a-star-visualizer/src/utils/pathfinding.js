@@ -19,10 +19,10 @@ export class Node {
 }
 
 export class Grid {
-  constructor(width, height, density = 0.65) {
+  constructor(width, height, useMaze = true) {
     this.width = width;
     this.height = height;
-    this.nodes = this.createRandomGrid(density);
+    this.nodes = useMaze ? this.createMaze() : this.createRandomGrid(0.65);
   }
 
   createRandomGrid(density) {
@@ -36,6 +36,90 @@ export class Grid {
       grid.push(row);
     }
     return grid;
+  }
+
+  /**
+   * Creates a maze using recursive backtracking algorithm
+   * This creates a perfect maze with guaranteed paths
+   */
+  createMaze() {
+    // Initialize grid with all walls
+    const grid = [];
+    for (let y = 0; y < this.height; y++) {
+      const row = [];
+      for (let x = 0; x < this.width; x++) {
+        row.push(new Node(x, y, false));
+      }
+      grid.push(row);
+    }
+
+    // Recursive backtracking to carve paths
+    const visited = new Set();
+    const stack = [];
+
+    // Start from random position (must be odd coordinates for proper maze)
+    const startX = Math.floor(Math.random() * Math.floor(this.width / 2)) * 2 + 1;
+    const startY = Math.floor(Math.random() * Math.floor(this.height / 2)) * 2 + 1;
+
+    stack.push({ x: startX, y: startY });
+    visited.add(`${startX},${startY}`);
+    grid[startY][startX].isWalkable = true;
+
+    while (stack.length > 0) {
+      const current = stack[stack.length - 1];
+      const neighbors = this.getUnvisitedNeighbors(current, visited, 2);
+
+      if (neighbors.length > 0) {
+        // Choose random neighbor
+        const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+
+        // Carve path between current and next
+        const wallX = current.x + (next.x - current.x) / 2;
+        const wallY = current.y + (next.y - current.y) / 2;
+
+        grid[wallY][wallX].isWalkable = true;
+        grid[next.y][next.x].isWalkable = true;
+
+        visited.add(`${next.x},${next.y}`);
+        stack.push(next);
+      } else {
+        stack.pop();
+      }
+    }
+
+    // Add some extra openings to make it less perfect
+    for (let i = 0; i < Math.floor((this.width * this.height) * 0.05); i++) {
+      const x = Math.floor(Math.random() * this.width);
+      const y = Math.floor(Math.random() * this.height);
+      if (x > 0 && x < this.width - 1 && y > 0 && y < this.height - 1) {
+        grid[y][x].isWalkable = true;
+      }
+    }
+
+    return grid;
+  }
+
+  getUnvisitedNeighbors(cell, visited, step = 2) {
+    const neighbors = [];
+    const directions = [
+      { x: 0, y: -step }, // Up
+      { x: 0, y: step },  // Down
+      { x: -step, y: 0 }, // Left
+      { x: step, y: 0 },  // Right
+    ];
+
+    for (const dir of directions) {
+      const nx = cell.x + dir.x;
+      const ny = cell.y + dir.y;
+
+      if (nx >= 0 && nx < this.width && ny >= 0 && ny < this.height) {
+        if (!visited.has(`${nx},${ny}`)) {
+          neighbors.push({ x: nx, y: ny });
+        }
+      }
+    }
+
+    return neighbors;
   }
 
   getNode(x, y) {
